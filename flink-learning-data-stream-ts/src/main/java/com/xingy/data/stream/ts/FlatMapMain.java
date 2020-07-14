@@ -10,6 +10,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * @className com.zhisheng.data.stream.map.flatmap.FlatMapMain
  * @date 2020/07/09 14:54
  * @description
+ * TODO//
+    FlatMap DataStream -> DataStream 取一个元素并产生零个，一个或多个元素。平面图功能可将句子拆分为单词：
  */
 public class FlatMapMain {
     public static void main(String[] args) throws Exception {

@@ -10,17 +10,27 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @description 测试订单表
  */
 public class Order {
-    private String Id;
+    private String id;
     private String name;
     private double price;
     private String createTime;
 
+    public Order() {
+    }
+
+    public Order(String id, String name, double price, String createTime) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.createTime = createTime;
+    }
+
     public String getId() {
-        return Id;
+        return id;
     }
 
     public void setId(String id) {
-        Id = id;
+        id = id;
     }
 
     public String getName() {
@@ -51,7 +61,7 @@ public class Order {
     @Override
     public String toString() {
         return "Order{" +
-                "Id='" + Id + '\'' +
+                "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", createTime='" + createTime + '\'' +
@@ -69,7 +79,7 @@ public class Order {
 
         return new EqualsBuilder()
                 .append(price, order.price)
-                .append(Id, order.Id)
+                .append(id, order.id)
                 .append(name, order.name)
                 .append(createTime, order.createTime)
                 .isEquals();
@@ -78,7 +88,7 @@ public class Order {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-                .append(Id)
+                .append(id)
                 .append(name)
                 .append(price)
                 .append(createTime)

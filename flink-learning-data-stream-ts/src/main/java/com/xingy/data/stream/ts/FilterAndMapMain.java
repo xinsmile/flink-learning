@@ -12,6 +12,9 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * @className com.zhisheng.data.stream.map.flatmap.FilterAndMapMain
  * @date 2020/07/09 14:54
  * @description
+ * TODO //
+    Map DataStream -> DataStream 取一个元素并产生一个元素。一个映射函数
+    Filter DataStream -> DataStream 为每个元素评估一个布尔函数，并保留该函数返回true的布尔函数。筛选出零值的筛选器：
  */
 public class FilterAndMapMain {
     public static void main(String[] args) throws Exception {

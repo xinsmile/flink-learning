@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * @author xinguiyuan
  * @className com.xingy.example.Main
  * @date 2020/07/10 16:26
- * @description
+ * @description TODO// KeyBy DataStream -> KeyedStream 从逻辑上将流划分为不相交的分区。具有相同键的所有记录都分配给同一分区。在内部，keyBy（）是通过哈希分区实现的。有多种指定密钥的方法
  */
 public class KeyByMain {
     public static void main(String[] args) throws Exception {
@@ -27,6 +27,8 @@ public class KeyByMain {
                 dataStream.flatMap(new WordCountFlatMapFunction()).keyBy("word");
         kds.print("kds flatMap & keyBy");
 
+
+        // Aggregations
         DataStream<WordCount> ds =
                 dataStream.flatMap(new WordCountFlatMapFunction())
                 .keyBy("word")
