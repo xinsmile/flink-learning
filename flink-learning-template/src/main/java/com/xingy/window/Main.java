@@ -1,4 +1,4 @@
-package com.xingy.template;
+package com.xingy.window;
 
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;

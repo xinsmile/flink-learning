@@ -11,6 +11,7 @@
     <modules>
         <module>flink-learning-template</module>
         <module>flink-learning-data-stream-ts</module>
+        <module>flink-learning-window</module>
     </modules>
 
     <properties>
