@@ -1,4 +1,4 @@
-package com.xingy.window;
+package com.xingy.window.windowing;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -14,13 +14,17 @@ import org.apache.flink.util.Collector;
 
 /**
  * @author xinguiyuan
- * @className com.xingy.window.MyWindow
+ * @className com.xingy.window.windowing.MyWindow
  * @date 2020/07/17 17:14
  * @description
  */
 public class MyWindow extends RichWindowFunction<WordEvent, WordCountEvent, Tuple, TimeWindow> {
 
     private WordCountEvent wce = new WordCountEvent();
+
+    private MyWindow() {
+
+    }
 
     public static MyWindow create() {
         return new MyWindow();
@@ -49,7 +53,7 @@ public class MyWindow extends RichWindowFunction<WordEvent, WordCountEvent, Tupl
         wce.setStartTime(DateTimeFormatterUtil.format(
                 new Date(timeWindow.getStart()), DateFormatPattern.YYYY_MM_DD_HH_MM_SS));
         wce.setEndTime(DateTimeFormatterUtil.format(
-                new Date(timeWindow.getEnd()), DateFormatPattern.YYYY_MM_DD_HH_MM_SS));
+                new Date(timeWindow.getStart()), DateFormatPattern.YYYY_MM_DD_HH_MM_SS));
         System.out.println(wce);
         collector.collect(wce);
     }
