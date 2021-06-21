@@ -1,13 +1,19 @@
 package com.xingy.window;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
+import com.xingy.window.model.WordCountEvent;
 import com.xingy.window.model.WordEvent;
-import com.xingy.window.watemark.periodic.BoundedOutOfOrdernessGenerator;
+import com.xingy.window.windowing.MyWindow;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.triggers.ContinuousEventTimeTrigger;
 
 /**
  * @author xinguiyuan
@@ -32,11 +38,14 @@ public class WindowDemo {
         //设置eventTime
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
+        //疑问 --- 并行度没有设置时 窗口没有触发 ？！
+        env.setParallelism(1);
+
         // DataStream<WordEvent> data = env.addSource(new CustomSource());
 
         DataStream<String> dataStream = env.socketTextStream("localhost", 9999);
 
-        dataStream.print("dataStream source");
+        // dataStream.print("dataStream source");
         DataStream<WordEvent> data = dataStream.map(new MapFunction<String, WordEvent>() {
             @Override
             public WordEvent map(String s) throws Exception {
@@ -46,12 +55,30 @@ public class WindowDemo {
         });
 
         //设置水印
-        data.assignTimestampsAndWatermarks(new BoundedOutOfOrdernessGenerator())
-                .keyBy("word")
-                .window(TumblingEventTimeWindows.of(Time.seconds(5)))
+        DataStream<WordCountEvent> ds_second =
+                // data.assignTimestampsAndWatermarks(new BoundedOutOfOrdernessGenerator())
+        // data.assignTimestampsAndWatermarks(new TimeLagWatermarkGenerator())
+        data.assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<WordEvent>(Time.seconds(1)) {
+            private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            @Override
+            public long extractTimestamp(WordEvent wordEvent) {
+                long id = Thread.currentThread().getId();
+                System.out.println("currentThreadId:" + id + ",key:" + wordEvent.getWord()
+                        + ",eventCurrentTime:[" + wordEvent.getCurrentTime()
+                        + "],eventTime:[" + sdf.format(new Date(wordEvent.getTimestamp()))
+                        + "],watermark:[" + sdf.format(Objects.requireNonNull(getCurrentWatermark()).getTimestamp()) + "]");
+
+                return wordEvent.getTimestamp();
+            }
+        }).keyBy("word")
+                .window(TumblingEventTimeWindows.of(Time.seconds(30)))
+                .trigger(ContinuousEventTimeTrigger.of(Time.seconds(10)))
+                // .timeWindow(Time.seconds(10))
                 // .timeWindow(Time.seconds(3))
-                .apply(MyWindow.create())
-                .print("ds count");
+                .apply(MyWindow.create());
+
+        ds_second.print("ds_second");
 
         env.execute("flink learning project template");
     }
